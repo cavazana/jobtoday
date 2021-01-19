@@ -1,0 +1,79 @@
+#!/bin/bash
+
+pergunta(){
+   echo ""
+   echo "Pressione ENTER para voltar"   
+   echo ""
+   read VOLTAR   
+}
+
+menu=0
+while [ $menu -eq 0 ]
+do
+clear
+echo
+echo  "CRIE UM ARQUIVO COM A LISTA DOS SERVIDORES"
+echo 
+echo "1 - Enviar arquivo(s)"
+echo "2 - Executar comando remoto"
+echo "3 - Executar um script remoto"
+echo "4 - Coletar arquivo(s)"
+echo "0 - Sair"
+echo -ne "\n Digite a opção desejada: "
+read RESP
+
+case $RESP in
+
+1) 
+	echo -ne "\n Lista dos servidores: "
+	read LISTSERV
+	echo -ne "\n Diretorio remoto: "
+	read DESTINO
+	echo -ne "\n Arquivo(s): "
+	read ARQUIVOS
+	echo
+	echo "Iniciando a(s) tranferencia(s): "
+	echo "================================"
+	
+	for i in `cat $LISTSERV` ; do echo $i ; echo ------ ;  scp $ARQUIVOS ibm0391@$i:$DESTINO ; echo ------; done
+	menu=1;;
+2) 
+	echo -ne "\n Lista dos servidores: "
+	read LISTSERV
+	echo -ne "\n Comando: "
+	read COMR
+	echo
+	echo "Disparando comando(s): "
+	echo "================================"
+	for i in `cat $LISTSERV` ; do echo $i ; echo ------ ; ssh ibm0391@$i "$COMR" ; echo ------ ; done
+	menu=1;;
+3) 
+	echo -ne "\n Lista dos servidores: "
+	read LISTSERV
+	echo -ne "\n Script (local): "
+	read RSCRIP
+	echo
+	echo "Iniciando script no(s) servidore(s): "
+	echo "================================"
+	for i in `cat $LISTSERV` ; do echo $i ; echo ------ ; ssh ibm0391@$i < $RSCRIP ; echo ------ ; done
+	menu=1;;
+4)
+        echo -ne "\n Lista dos servidores: "
+        read LISTSERV
+        echo -ne "\n Diretorio Local: "
+        read DESTINO
+        echo -ne "\n Arquivo(os): "
+        read ARQUIVOS
+        echo
+        echo "Iniciando a(s) tranferencia(s): "
+        echo "================================"
+
+        for i in `cat $LISTSERV` ; do echo $i ; echo ------ ; scp ibm0391@$i:$ARQUIVOS $DESTINO ; echo ------ ; done
+        menu=1;;
+0) exit
+;;
+*) echo "" ; echo "Opção Inválida" ; sleep 1 ; echo ""
+;;
+
+esac
+done
